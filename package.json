@@ -1,0 +1,27 @@
+{
+  "name": "@sidgaikwad/auth-setup",
+  "version": "1.0.0",
+  "description": "Framework-agnostic CLI for setting up authentication with Better Auth, Clerk, Lucia, and more",
+  "type": "module",
+  "bin": {
+    "auth-setup": "./bin/cli.js"
+  },
+  "keywords": [
+    "auth",
+    "authentication",
+    "better-auth",
+    "clerk",
+    "lucia",
+    "nextauth",
+    "setup",
+    "cli",
+    "oauth",
+    "2fa",
+    "session"
+  ],
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "chalk": "^5.3.0",
+    "execa": "^8.0.1"
+  }
+}
