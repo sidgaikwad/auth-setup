@@ -1,14 +1,8 @@
-// ============================================
-// src/prompts.ts - Better Auth prompts
-// ============================================
-
 import { select, confirm, multiselect } from "@clack/prompts";
 import type { DetectedSetup } from "./detector";
 
 export interface AuthConfig {
-  provider: "better-auth";
-  methods: Array<"email" | "google" | "github" | "magic-link">;
-  features: Array<"email-verification" | "password-reset" | "2fa" | "profile">;
+  methods: Array<"email" | "google" | "github">;
   includeUI: boolean;
   includeMiddleware: boolean;
   addToSchema: boolean;
@@ -17,48 +11,37 @@ export interface AuthConfig {
 export async function promptAuthSetup(
   detected: DetectedSetup
 ): Promise<AuthConfig> {
-  // For MVP, only Better Auth
-  const provider = "better-auth";
+  // Warn if Better Auth already exists
+  if (detected.hasBetterAuth) {
+    const shouldContinue = (await confirm({
+      message:
+        "Better Auth is already installed. Continue? (may overwrite files)",
+      initialValue: false,
+    })) as boolean;
+
+    if (!shouldContinue) {
+      throw new Error("Setup cancelled by user");
+    }
+  }
 
   // Authentication methods
   const methods = (await multiselect({
     message: "Select authentication methods",
     options: [
-      { value: "email", label: "Email + Password", hint: "Traditional auth" },
+      {
+        value: "email",
+        label: "Email + Password",
+        hint: "Traditional username/password",
+      },
       { value: "google", label: "Google OAuth", hint: "Sign in with Google" },
       { value: "github", label: "GitHub OAuth", hint: "Sign in with GitHub" },
-      {
-        value: "magic-link",
-        label: "Magic Link",
-        hint: "Passwordless email link",
-      },
     ],
     required: true,
-  })) as Array<"email" | "google" | "github" | "magic-link">;
-
-  // Features
-  const features = (await multiselect({
-    message: "Select additional features",
-    options: [
-      {
-        value: "email-verification",
-        label: "Email Verification",
-        hint: "Verify email addresses",
-      },
-      {
-        value: "password-reset",
-        label: "Password Reset",
-        hint: "Forgot password flow",
-      },
-      { value: "2fa", label: "Two-Factor Auth (2FA)", hint: "Extra security" },
-      { value: "profile", label: "User Profile", hint: "Profile management" },
-    ],
-    required: false,
-  })) as Array<"email-verification" | "password-reset" | "2fa" | "profile">;
+  })) as Array<"email" | "google" | "github">;
 
   // UI Components
   const includeUI = (await confirm({
-    message: "Generate UI components (Sign In, Sign Up)?",
+    message: "Generate UI components? (Sign In, Sign Up, User Button)",
     initialValue: true,
   })) as boolean;
 
@@ -70,7 +53,7 @@ export async function promptAuthSetup(
 
   // Add to existing schema?
   let addToSchema = false;
-  if (detected.hasORM) {
+  if (detected.hasORM && detected.schemaPath) {
     addToSchema = (await confirm({
       message: `Add auth tables to your ${detected.orm} schema?`,
       initialValue: true,
@@ -78,9 +61,7 @@ export async function promptAuthSetup(
   }
 
   return {
-    provider,
     methods,
-    features,
     includeUI,
     includeMiddleware,
     addToSchema,
