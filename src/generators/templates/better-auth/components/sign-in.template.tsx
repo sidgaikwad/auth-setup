@@ -1,9 +1,13 @@
-export function getSignInTemplate(): string {
+export function getSignInTemplate(srcDir: string | null): string {
+  // Determine correct import path based on project structure
+  const authImport =
+    srcDir === 'app' ? '@/lib/auth' : srcDir === 'src' ? '@/lib/auth' : '../lib/auth'
+
   return `"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { auth } from "@/lib/auth"
+import { auth } from "${authImport}"
 
 export function SignIn() {
   const [email, setEmail] = useState("")
@@ -26,10 +30,14 @@ export function SignIn() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    await auth.signIn.social({ provider: "google" })
+  }
+
   return (
     <div className="max-w-md mx-auto mt-8 p-6 border rounded-lg">
       <h1 className="text-2xl font-bold mb-6">Sign In</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Email</label>
@@ -41,7 +49,7 @@ export function SignIn() {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium mb-1">Password</label>
           <input
@@ -52,7 +60,7 @@ export function SignIn() {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-        
+
         <button
           type="submit"
           disabled={loading}
@@ -61,18 +69,30 @@ export function SignIn() {
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
+
+      <div className="mt-4">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full border py-2 rounded hover:bg-gray-50"
+        >
+          Sign in with Google
+        </button>
+      </div>
     </div>
   )
 }
-`;
+`
 }
 
-export function getSignUpTemplate(): string {
+export function getSignUpTemplate(srcDir: string | null): string {
+  const authImport =
+    srcDir === 'app' ? '@/lib/auth' : srcDir === 'src' ? '@/lib/auth' : '../lib/auth'
+
   return `"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { auth } from "@/lib/auth"
+import { auth } from "${authImport}"
 
 export function SignUp() {
   const [name, setName] = useState("")
@@ -99,7 +119,7 @@ export function SignUp() {
   return (
     <div className="max-w-md mx-auto mt-8 p-6 border rounded-lg">
       <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Name</label>
@@ -111,7 +131,7 @@ export function SignUp() {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium mb-1">Email</label>
           <input
@@ -122,7 +142,7 @@ export function SignUp() {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium mb-1">Password</label>
           <input
@@ -133,7 +153,7 @@ export function SignUp() {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-        
+
         <button
           type="submit"
           disabled={loading}
@@ -145,16 +165,19 @@ export function SignUp() {
     </div>
   )
 }
-`;
+`
 }
 
-export function getUserButtonTemplate(): string {
+export function getUserButtonTemplate(srcDir: string | null): string {
+  const authImport =
+    srcDir === 'app' ? '@/lib/auth' : srcDir === 'src' ? '@/lib/auth' : '../lib/auth'
+
   return `"use client"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { auth } from "@/lib/auth"
-import type { User } from "@/lib/auth"
+import { auth } from "${authImport}"
+import type { User } from "${authImport}"
 
 export function UserButton() {
   const [user, setUser] = useState<User | null>(null)
@@ -198,5 +221,5 @@ export function UserButton() {
     </div>
   )
 }
-`;
+`
 }
