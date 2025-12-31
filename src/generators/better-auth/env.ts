@@ -1,35 +1,19 @@
-import { writeFileWithDir } from '../../file-writer'
-import type { AuthConfig } from '../../prompts'
+import { writeFileWithDir } from "../../file-writer";
+import type { AuthConfig } from "../../prompts";
 
 export async function generateEnvExample(
   config: AuthConfig,
   outputPath: string
 ): Promise<void> {
-  let envContent = `# Better Auth Configuration
-BETTER_AUTH_SECRET=your-secret-here # Generate with: openssl rand -base64 32
-BETTER_AUTH_URL=http://localhost:3000
+  let content = `BETTER_AUTH_SECRET=\nBETTER_AUTH_URL=http://localhost:3000\n\n`;
 
-`
-
-  if (config.methods.includes('google')) {
-    envContent += `# Google OAuth
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-`
+  if (config.methods.includes("google")) {
+    content += `GOOGLE_CLIENT_ID=\nGOOGLE_CLIENT_SECRET=\n\n`;
+  }
+  if (config.methods.includes("github")) {
+    content += `GITHUB_CLIENT_ID=\nGITHUB_CLIENT_SECRET=\n\n`;
   }
 
-  if (config.methods.includes('github')) {
-    envContent += `# GitHub OAuth
-GITHUB_CLIENT_ID=your-github-client-id
-GITHUB_CLIENT_SECRET=your-github-client-secret
-
-`
-  }
-
-  envContent += `# Database (if not already set)
-DATABASE_URL=postgresql://user:password@localhost:5432/mydb
-`
-
-  await writeFileWithDir(outputPath, envContent)
+  content += `DATABASE_URL=postgresql://user:password@localhost:5432/mydb\n`;
+  await writeFileWithDir(outputPath, content);
 }
