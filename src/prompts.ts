@@ -2,6 +2,7 @@ import { select, confirm, multiselect } from "@clack/prompts";
 import type { DetectedSetup } from "./detector";
 
 export interface AuthConfig {
+  provider: "better-auth" | "clerk";
   methods: Array<"email" | "google" | "github">;
   includeUI: boolean;
   includeMiddleware: boolean;
@@ -11,59 +12,45 @@ export interface AuthConfig {
 export async function promptAuthSetup(
   detected: DetectedSetup
 ): Promise<AuthConfig> {
-  // Warn if Better Auth already exists
-  if (detected.hasBetterAuth) {
-    const shouldContinue = (await confirm({
-      message:
-        "Better Auth is already installed. Continue? (may overwrite files)",
-      initialValue: false,
-    })) as boolean;
+  const provider = (await select({
+    message: "Select your auth provider",
+    options: [
+      {
+        value: "better-auth",
+        label: "Better Auth",
+        hint: "Type-safe, modern, self-hosted",
+      },
+      { value: "clerk", label: "Clerk", hint: "Managed service, beautiful UI" },
+    ],
+  })) as AuthConfig["provider"];
 
-    if (!shouldContinue) {
-      throw new Error("Setup cancelled by user");
-    }
-  }
-
-  // Authentication methods
   const methods = (await multiselect({
     message: "Select authentication methods",
     options: [
-      {
-        value: "email",
-        label: "Email + Password",
-        hint: "Traditional username/password",
-      },
-      { value: "google", label: "Google OAuth", hint: "Sign in with Google" },
-      { value: "github", label: "GitHub OAuth", hint: "Sign in with GitHub" },
+      { value: "email", label: "Email + Password" },
+      { value: "google", label: "Google OAuth" },
+      { value: "github", label: "GitHub OAuth" },
     ],
     required: true,
   })) as Array<"email" | "google" | "github">;
 
-  // UI Components
   const includeUI = (await confirm({
-    message: "Generate UI components? (Sign In, Sign Up, User Button)",
+    message: "Generate UI components?",
     initialValue: true,
   })) as boolean;
 
-  // Middleware
   const includeMiddleware = (await confirm({
     message: "Generate middleware for route protection?",
     initialValue: true,
   })) as boolean;
 
-  // Add to existing schema?
-  let addToSchema = false;
-  if (detected.hasORM && detected.schemaPath) {
-    addToSchema = (await confirm({
-      message: `Add auth tables to your ${detected.orm} schema?`,
-      initialValue: true,
-    })) as boolean;
-  }
+  const addToSchema =
+    detected.hasORM && detected.schemaPath && provider === "better-auth"
+      ? ((await confirm({
+          message: `Add auth tables to ${detected.orm} schema?`,
+          initialValue: true,
+        })) as boolean)
+      : false;
 
-  return {
-    methods,
-    includeUI,
-    includeMiddleware,
-    addToSchema,
-  };
+  return { provider, methods, includeUI, includeMiddleware, addToSchema };
 }
