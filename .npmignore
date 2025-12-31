@@ -1,0 +1,36 @@
+# Source files (only ship dist/)
+src/
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig.json
+.gitignore
+.npmignore
+
+# Tests
+**/*.test.ts
+**/*.spec.ts
+coverage/
+
+# Development
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.github/
+
+# Package manager
+node_modules/
+bun.lockb
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
