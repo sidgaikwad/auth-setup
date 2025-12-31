@@ -1,10 +1,24 @@
 {
   "name": "@sidgaikwad/auth-setup",
   "version": "1.0.0",
-  "description": "Framework-agnostic CLI for setting up authentication with Better Auth, Clerk, Lucia, and more",
+  "description": "Framework-agnostic CLI for setting up authentication with Better Auth, Clerk, and more",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
     "auth-setup": "./bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node --minify && tsc --emitDeclarationOnly",
+    "prepublishOnly": "bun run build",
+    "test": "bun test"
   },
   "keywords": [
     "auth",
@@ -16,12 +30,34 @@
     "setup",
     "cli",
     "oauth",
+    "nextjs",
+    "remix",
+    "typescript",
     "2fa",
-    "session"
+    "session",
+    "drizzle",
+    "prisma"
   ],
+  "author": "Siddharth Gaikwad <your@email.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sidgaikwad/auth-setup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sidgaikwad/auth-setup/issues"
+  },
+  "homepage": "https://github.com/sidgaikwad/auth-setup#readme",
   "dependencies": {
     "@clack/prompts": "^0.7.0",
     "chalk": "^5.3.0",
     "execa": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
