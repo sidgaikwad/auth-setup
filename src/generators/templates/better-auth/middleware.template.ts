@@ -8,7 +8,10 @@ export async function middleware(request: NextRequest) {
     headers: request.headers,
   })
 
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard")
+  const isProtectedRoute =
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/profile") ||
+    request.nextUrl.pathname.startsWith("/settings")
 
   if (isProtectedRoute && !session) {
     return NextResponse.redirect(new URL("/sign-in", request.url))
@@ -24,5 +27,5 @@ export const config = {
     "/settings/:path*",
   ],
 }
-`;
+`
 }
