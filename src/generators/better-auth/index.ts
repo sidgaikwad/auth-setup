@@ -31,7 +31,7 @@ export async function generateBetterAuth(
 
   // 5. Generate UI components
   if (config.includeUI) {
-    await generateComponents(detected.framework, paths.components);
+    await generateComponents(paths.components);
   }
 
   // 6. Generate .env.example
